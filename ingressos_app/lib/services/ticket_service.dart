@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/ticket.dart';
 
-const baseUrl =
-    'http://10.0.2.2:3000'; // use o IP local se estiver em dispositivo
+const baseUrl = 'http://localhost:3000';
 
 class TicketService {
   static Future<bool> registerTicket(Ticket ticket) async {

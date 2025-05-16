@@ -17,12 +17,50 @@ class _RegisterTicketScreenState extends State<RegisterTicketScreen> {
     if (_formKey.currentState!.validate()) {
       final ticket = Ticket(name: name, cpf: cpf, email: email, area: area);
       final success = await TicketService.registerTicket(ticket);
+
+      if (!mounted) {
+        return;
+      }
+
       final snackBar = SnackBar(
         content: Text(success ? 'Ingresso cadastrado!' : 'Erro ao cadastrar'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       if (success) Navigator.pop(context);
     }
+  }
+
+  bool isValidEmail(String email) {
+    final regex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return regex.hasMatch(email);
+  }
+
+  bool isValidCPF(String cpf) {
+    cpf = cpf.replaceAll(RegExp(r'\D'), '');
+
+    if (cpf.length != 11 || RegExp(r'^(\d)\1*$').hasMatch(cpf)) return false;
+
+    List<int> digits = cpf.split('').map(int.parse).toList();
+
+    // Primeiro dígito verificador
+    int sum = 0;
+    for (int i = 0; i < 9; i++) {
+      sum += digits[i] * (10 - i);
+    }
+    int firstVerifier = (sum * 10) % 11;
+    if (firstVerifier == 10) firstVerifier = 0;
+    if (firstVerifier != digits[9]) return false;
+
+    // Segundo dígito verificador
+    sum = 0;
+    for (int i = 0; i < 10; i++) {
+      sum += digits[i] * (11 - i);
+    }
+    int secondVerifier = (sum * 10) % 11;
+    if (secondVerifier == 10) secondVerifier = 0;
+    if (secondVerifier != digits[10]) return false;
+
+    return true;
   }
 
   @override
@@ -42,13 +80,21 @@ class _RegisterTicketScreenState extends State<RegisterTicketScreen> {
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'CPF'),
+                keyboardType: TextInputType.number,
                 onChanged: (v) => cpf = v,
-                validator: (v) => v!.isEmpty ? 'Informe o CPF' : null,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Informe o CPF';
+                  return isValidCPF(v) ? null : 'CPF inválido';
+                },
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
                 onChanged: (v) => email = v,
-                validator: (v) => v!.isEmpty ? 'Informe o email' : null,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Informe o email';
+                  return isValidEmail(v) ? null : 'Email inválido';
+                },
               ),
               DropdownButtonFormField(
                 value: area,

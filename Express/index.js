@@ -15,9 +15,15 @@ const TICKETS_FILE = path.join(__dirname, 'data', 'tickets.json');
 
 // Função auxiliar para ler os ingressos
 function readTickets() {
-    if (!fs.existsSync(TICKETS_FILE)) return [];
-    const data = fs.readFileSync(TICKETS_FILE);
-    return JSON.parse(data);
+    try {
+        if (!fs.existsSync(TICKETS_FILE)) return [];
+        const data = fs.readFileSync(TICKETS_FILE, 'utf-8').trim();
+        return data ? JSON.parse(data) : [];
+    } catch (err) {
+        console.error('JSON inválido. Recriando arquivo...');
+        fs.writeFileSync(TICKETS_FILE, '[]'); // recria com array vazio
+        return [];
+    }
 }
 
 // Função auxiliar para salvar os ingressos
