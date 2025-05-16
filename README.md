@@ -5,5 +5,5 @@ O usuário preenche um formulário com nome, CPF, e-mail e escolhe a área (Pist
 
 preenche → envia → API recebe → salva no JSON → pode consultar depois
 
-para executar a API é necessario ter o Node instalado. Digite <b>node index.js</b> para rodar o back
+para executar a API é necessario ter o Node instalado. Digite <b>node index.js</b> para rodar o back </br>
 para executar o APP é necessario ter o dart e o flutter instalado. Digite <b>flutter run</b> para rodar o app
